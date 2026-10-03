@@ -2,15 +2,24 @@
 import time
 import cv2
 from detector import PersonDetector
+from config import COACH_CAPACITY
+from sender import OccupancySender
+
 det = PersonDetector()
 cap = cv2.VideoCapture(0)
+sender = OccupancySender()
 
 # P3, P4 & P5: Robust state-based line crossing and Occupancy
-COACH_CAPACITY = 50
+# COACH_CAPACITY imported from config.py
 THRESHOLD = 15        # Minimum distance from line to register initial side
+COOLDOWN_FRAMES = 15  # Ignore re-crossing by same ID within this many frames
+STALE_FRAMES = 90     # Remove track state after this many frames unseen
 track_side = {}       # {track_id: "left" | "right"}
+track_last_seen = {}  # {track_id: last frame_number seen}
+track_cooldown = {}   # {track_id: frame_number of last crossing}
 entries = 0
 exits = 0
+frame_count = 0
 
 prev_time = time.time()
 fps = 0.0
@@ -19,6 +28,8 @@ while True:
     ok, frame = cap.read()
     if not ok:
         break
+
+    frame_count += 1
 
     # Calculate real-time FPS
     curr_time = time.time()
@@ -38,6 +49,9 @@ while True:
         # Draw small circle marker at person's center point
         cv2.circle(annotated, (cx, cy), 5, (0, 255, 255), -1)
 
+        # Update last-seen frame for stale track cleanup
+        track_last_seen[tid] = frame_count
+
         # Check side transitions
         if tid not in track_side:
             # Register initial side when sufficiently away from the line
@@ -47,18 +61,34 @@ while True:
                 track_side[tid] = "right"
         else:
             current_side = track_side[tid]
+            # Skip if this ID crossed too recently (prevents oscillation)
+            if frame_count - track_cooldown.get(tid, 0) < COOLDOWN_FRAMES:
+                continue
             # Entry: Started from left, now moved past the line to the right
             if current_side == "left" and cx > line_x + THRESHOLD:
                 entries += 1
                 track_side[tid] = "right"
+                track_cooldown[tid] = frame_count
             # Exit: Started from right, now moved past the line to the left
             elif current_side == "right" and cx < line_x - THRESHOLD:
                 exits += 1
                 track_side[tid] = "left"
+                track_cooldown[tid] = frame_count
+
+    # Purge stale tracks not seen for STALE_FRAMES
+    stale_ids = [tid for tid, last in track_last_seen.items()
+                 if frame_count - last > STALE_FRAMES]
+    for tid in stale_ids:
+        track_side.pop(tid, None)
+        track_last_seen.pop(tid, None)
+        track_cooldown.pop(tid, None)
 
     # P4: Occupancy calculation
-    occupancy = max(0, entries - exits)
+    occupancy = entries - exits
     occupancy_pct = round((occupancy / COACH_CAPACITY) * 100, 1)
+
+    # POST to backend (non-blocking, skips if interval hasn't elapsed)
+    sender.maybe_send(occupancy, occupancy_pct)
 
     # Draw the vertical virtual counting line (Cyan line)
     cv2.line(annotated, (line_x, 0), (line_x, h), (255, 255, 0), 2)
