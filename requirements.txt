@@ -1,0 +1,91 @@
+# ==============================================================================
+# Metro Occupancy Monitoring System - Master Requirements Specification
+# ==============================================================================
+#
+# SYSTEM & RUNTIME PREREQUISITES
+# ------------------------------------------------------------------------------
+# Python Runtime  : Python >= 3.11, < 3.12 (Tested with Python 3.11.9)
+# Node.js Runtime : Node.js >= 18.0.0 (Tested with Node.js v25.1.0, npm 11.6.3)
+# Operating System: Windows / Linux / macOS (Webcam / Video stream required for Edge)
+# Database        : PostgreSQL / Supabase PostgreSQL
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. COMPUTER VISION & EDGE PIPELINE (edge/src)
+# ------------------------------------------------------------------------------
+# Core Computer Vision & OpenCV bindings
+opencv-python>=4.8.0,<6.0.0
+
+# Deep Learning Object Detection (YOLOv8) & Tracking (BoT-SORT / ByteTrack)
+ultralytics>=8.0.0,<9.0.0
+
+# PyTorch & Torchvision runtimes (CPU / CUDA compatible)
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Numerical computing & array manipulation
+numpy>=1.24.0,<3.0.0
+
+# Image processing utilities
+Pillow>=10.0.0
+
+# Linear assignment problem solver for object trackers (BoT-SORT)
+lap>=0.5.12
+
+# HTTP client for streaming occupancy events from Edge to Backend
+requests>=2.31.0,<3.0.0
+
+# Configuration & data serialization
+PyYAML>=6.0
+
+# ------------------------------------------------------------------------------
+# 2. BACKEND API & DATABASE (backend/app)
+# (Referenced from backend/requirements.txt)
+# ------------------------------------------------------------------------------
+# Fast, modern web framework for building APIs
+fastapi>=0.115.0,<1.0.0
+
+# Production ASGI server with standard extras (uvloop, httptools, websockets)
+uvicorn[standard]>=0.30.0,<1.0.0
+
+# SQL toolkit and Object Relational Mapper (ORM)
+sqlalchemy>=2.0.0,<3.0.0
+
+# PostgreSQL database adapter with binary wheels (psycopg 3)
+psycopg[binary]>=3.1.0,<4.0.0
+
+# Fallback PostgreSQL adapter
+psycopg2-binary>=2.9.9
+
+# Environment variable configuration management (.env support)
+python-dotenv>=1.0.0,<2.0.0
+
+# Data validation and settings management using Python type hints
+pydantic>=2.0.0,<3.0.0
+
+# ------------------------------------------------------------------------------
+# 3. FRONTEND WEB APPLICATION (frontend/)
+# ------------------------------------------------------------------------------
+# Note: Frontend packages are managed via npm / package.json in the ./frontend directory.
+# Run `cd frontend && npm install` to install frontend dependencies.
+#
+# Frontend Runtime & Tooling:
+#   - Node.js >= 18.0.0
+#   - npm >= 9.0.0 (or pnpm / yarn)
+#   - Vite 8.x (Build tool & HMR dev server)
+#
+# Production Dependencies:
+#   - react: ^19.2.8
+#   - react-dom: ^19.2.8
+#
+# Development & Linting Dependencies:
+#   - vite: ^8.3.0
+#   - @vitejs/plugin-react: ^6.1.1
+#   - eslint: ^10.10.0
+#   - eslint-plugin-react-hooks: ^7.1.1
+#   - eslint-plugin-react-refresh: ^0.5.6
+#   - @eslint/js: ^10.0.1
+#   - @types/react: ^19.2.18
+#   - @types/react-dom: ^19.2.7
+#   - globals: ^17.12.0
+# ==============================================================================
