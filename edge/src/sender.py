@@ -19,7 +19,8 @@ class OccupancySender:
         self.last_latency_ms: float = 0.0
         self.last_status: str = "idle"
 
-    def maybe_send(self, passenger_count: int, occupancy_pct: float):
+    def maybe_send(self, passenger_count: int, occupancy_pct: float,
+                   people_in_frame: int = 0, vacancy: int = 0):
         """Dispatches an async send if SEND_INTERVAL has elapsed and no send is in flight."""
         now = time.time()
         if now - self._last_send < SEND_INTERVAL:
@@ -39,6 +40,8 @@ class OccupancySender:
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "passenger_count": passenger_count,
             "occupancy_pct": occupancy_pct,
+            "people_in_frame": people_in_frame,
+            "vacancy": vacancy,
             "device_status": "active",
         }
 

@@ -39,6 +39,8 @@ class OccupancyRecord(Base):
     timestamp = Column(DateTime(timezone=True), nullable=False)
     passenger_count = Column(Integer, nullable=False)
     occupancy_pct = Column(Numeric, nullable=False)
+    people_in_frame = Column(Integer, nullable=False, default=0)  # live frame headcount
+    vacancy = Column(Integer, nullable=False, default=0)          # capacity - people_in_frame
     device_status = Column(String, nullable=False, default="ok")
     received_at = Column(DateTime(timezone=True), server_default=func.now())
 

@@ -11,4 +11,6 @@ class OccupancyIn(BaseModel):
     timestamp: datetime
     passenger_count: int
     occupancy_pct: float
+    people_in_frame: int = 0
+    vacancy: int = 0
     device_status: str = "active"

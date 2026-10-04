@@ -87,25 +87,29 @@ while True:
     occupancy = entries - exits
     occupancy_pct = round((occupancy / COACH_CAPACITY) * 100, 1)
 
+    # Frame-level headcount: how many people are physically visible RIGHT NOW
+    people_in_frame = people_count
+    vacancy = max(0, COACH_CAPACITY - people_in_frame)
+
     # POST to backend (non-blocking, skips if interval hasn't elapsed)
-    sender.maybe_send(occupancy, occupancy_pct)
+    sender.maybe_send(occupancy, occupancy_pct, people_in_frame, vacancy)
 
     # Draw the vertical virtual counting line (Cyan line)
     cv2.line(annotated, (line_x, 0), (line_x, h), (255, 255, 0), 2)
     cv2.putText(annotated, "Counting Line", (line_x + 5, 25),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
 
-    # Display HUD: People, Entries, Exits, Occupancy, and FPS
-    cv2.putText(annotated, f"People: {people_count}", (20, 30),
+    # Display HUD: People, Vacancy, Entries, Exits, Occupancy, and FPS
+    cv2.putText(annotated, f"In Frame: {people_in_frame}", (20, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-    cv2.putText(annotated, f"Entries: {entries}", (20, 60),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-    cv2.putText(annotated, f"Exits: {exits}", (20, 90),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
-    cv2.putText(annotated, f"Occupancy: {occupancy} / {COACH_CAPACITY}", (20, 120),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-    cv2.putText(annotated, f"Occupancy: {occupancy_pct}%", (20, 150),
+    cv2.putText(annotated, f"Vacancy: {vacancy} / {COACH_CAPACITY}", (20, 60),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+    cv2.putText(annotated, f"Entries: {entries}", (20, 90),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+    cv2.putText(annotated, f"Exits: {exits}", (20, 120),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
+    cv2.putText(annotated, f"Cumul. Occupancy: {occupancy} ({occupancy_pct}%)", (20, 150),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
     cv2.putText(annotated, f"FPS: {fps:.1f}", (w - 140, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
