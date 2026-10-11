@@ -24,6 +24,12 @@ def on_startup():
     init_db()
 
 
+@app.get("/health")
+def health_check():
+    """Health check endpoint for frontend connection status."""
+    return {"status": "ok", "service": "metro-occupancy-backend"}
+
+
 @app.post("/occupancy", status_code=status.HTTP_201_CREATED)
 def create_occupancy(payload: OccupancyIn, db: Session = Depends(get_db)):
     """Receive an occupancy reading from an edge device and persist it."""

@@ -37,6 +37,8 @@ edge/models/*
 
 data/raw/
 data/processed/
+*.db
+backend/*.db
 
 # ==============================
 # Jupyter
