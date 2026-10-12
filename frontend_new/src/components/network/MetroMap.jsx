@@ -12,9 +12,9 @@ export function MetroMap() {
   const purpleStations = PUNE_METRO_STATIONS.filter(
     (s) => s.line === 'purple-line' || s.isInterchange
   );
-  const aquaStations = PUNE_METRO_STATIONS.filter(
-    (s) => s.line === 'aqua-line' || s.isInterchange
-  );
+  const aquaStations = PUNE_METRO_STATIONS
+    .filter((s) => s.line === 'aqua-line' || s.isInterchange)
+    .sort((a, b) => a.x - b.x);
 
   const handleStationClick = (stationId) => {
     setSelectedStationId(stationId);
@@ -49,7 +49,7 @@ export function MetroMap() {
             onClick={() => setSelectedLineFilter('all')}
             className={`filter-btn ${selectedLineFilter === 'all' ? 'active' : ''}`}
           >
-            All Lines (29)
+            All Lines ({PUNE_METRO_STATIONS.length} stations)
           </button>
           <button
             onClick={() => setSelectedLineFilter('purple-line')}
