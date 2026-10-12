@@ -37,6 +37,12 @@ edge/models/*
 
 data/raw/
 data/processed/
+edge/data/
+edge/eval/*.csv
+edge/eval/*.json
+*.mp4
+metro_video.mp4
+
 
 # ==============================
 # Jupyter
